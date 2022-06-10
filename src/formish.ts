@@ -16,9 +16,8 @@ import type {
 } from './types'
 
 /**
- *
- * @param initialState
- * @returns
+ * State management wrapper meant for objects
+ * `editState` is used to edit individual object props
  */
 export const useStateEditor = <S>(
   initialState: (() => S) | S
@@ -30,9 +29,7 @@ export const useStateEditor = <S>(
 }
 
 /**
- *
- * @param event
- * @returns
+ * Returns modified key/value pair for component ChangeEvents
  */
 const changeEventKeyValue = (event: ChangeEvent<any>): [any, any] => {
   const key = event.target.name
@@ -46,9 +43,7 @@ const changeEventKeyValue = (event: ChangeEvent<any>): [any, any] => {
 }
 
 /**
- *
- * @param params
- * @returns
+ * Formik-esque state management
  */
 export const useFormState = <F>(params: {
   initialValues: F
@@ -62,8 +57,7 @@ export const useFormState = <F>(params: {
   const [values, editValue] = useStateEditor<F>(initialValues)
 
   /**
-   *
-   * @param event
+   * Handles changes within the form state
    */
   const handleChange: FormChangeHandler = (event) => {
     event.preventDefault()
@@ -77,17 +71,16 @@ export const useFormState = <F>(params: {
   }
 
   /**
-   *
-   * @param event
+   * Performs form validation
+   * & handles form submission
    */
   const handleSubmit: FormSubmitHandler = (event) => {
     event.preventDefault()
     const numErrors = Object.values(errors).reduce<number>((t, err) => {
-      if (err !== undefined) t++
-      return t
+      return err !== undefined ? t + 1 : t
     }, 0)
     if (numErrors === 0) onSubmit(values)
-    else if (onFailure) onFailure(errors)
+    else if (onFailure !== undefined) onFailure(errors)
     else console.error('formish: failed to submit form', errors)
   }
 
