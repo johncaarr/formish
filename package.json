@@ -1,0 +1,40 @@
+{
+  "name": "@johncaarr/formish",
+  "description": "Bare-bones form input validation, meant for React.js",
+  "author": "John Carr <johncaarr@gmail.com>",
+  "license": "MIT",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "keywords": [
+    "form",
+    "formish",
+    "input",
+    "johncarr",
+    "johncaarr",
+    "react",
+    "validation"
+  ],
+  "scripts": {
+    "start": "npx tsc && nodemon dist/index.js",
+    "build": "npx tsc -p .",
+    "refresh": "rm -rf ./node_modules ./package-lock.json && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/johncaarr/formish.git"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.5.1",
+    "@types/node": "^17.0.35",
+    "@types/react": "^18.0.9",
+    "@types/react-dom": "^18.0.4",
+    "nodemon": "^2.0.16",
+    "react": "^18.1.0",
+    "ts-node": "^10.7.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.6.4"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
