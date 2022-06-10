@@ -6,4 +6,5 @@
  */
 
 export * from './formish'
+export * from './types'
 export * from './validations'
