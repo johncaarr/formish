@@ -3,7 +3,7 @@
   "description": "Bare-bones form input validation, meant for React.js",
   "author": "John Carr <johncaarr@gmail.com>",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "keywords": [
