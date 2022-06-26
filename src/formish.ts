@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react'
 import type {
   FormChangeHandler,
@@ -51,38 +51,41 @@ export const useFormState = <F>(params: {
   onSubmit: (values: F) => void | Promise<void>
   onFailure?: (errors: FormErrors<F>) => void | Promise<void>
 }): [F, FormErrors<F>, FormChangeHandler, FormSubmitHandler] => {
-  const initialErrors = {} as FormErrors<F>
-  const [errors, editError] = useStateEditor<FormErrors<F>>(initialErrors)
   const { initialValues, validationSchema, onSubmit, onFailure } = params
   const [values, editValue] = useStateEditor<F>(initialValues)
+  const [errors, editError] = useStateEditor<FormErrors<F>>({} as FormErrors<F>)
 
   /**
    * Handles changes within the form state
    */
-  const handleChange: FormChangeHandler = (event) => {
-    event.preventDefault()
-    const [key, value] = changeEventKeyValue(event)
-    if (validationSchema && key in validationSchema) {
-      const validate = validationSchema[key as keyof typeof validationSchema]
-      const [isValid, error] = validate(value)
-      setTimeout(() => editError(key, isValid ? undefined : error!), 0)
+  const handleChange: FormChangeHandler = useMemo<FormChangeHandler>(() => {
+    return (event) => {
+      event.preventDefault()
+      const [key, value] = changeEventKeyValue(event)
+      if (validationSchema && key in validationSchema) {
+        const validate = validationSchema[key as keyof typeof validationSchema]
+        const [isValid, error] = validate(value)
+        setTimeout(() => editError(key, isValid ? undefined : error!), 0)
+      }
+      editValue(key, value)
     }
-    editValue(key, value)
-  }
+  }, [validationSchema])
 
   /**
    * Performs form validation
    * & handles form submission
    */
-  const handleSubmit: FormSubmitHandler = (event) => {
-    event.preventDefault()
-    const numErrors = Object.values(errors).reduce<number>((t, err) => {
-      return err !== undefined ? t + 1 : t
-    }, 0)
-    if (numErrors === 0) onSubmit(values)
-    else if (onFailure !== undefined) onFailure(errors)
-    else console.error('formish: failed to submit form', errors)
-  }
+  const handleSubmit: FormSubmitHandler = useMemo<FormSubmitHandler>(() => {
+    return (event) => {
+      event.preventDefault()
+      const numErrors = Object.values(errors).reduce<number>((t, err) => {
+        return err !== undefined ? t + 1 : t
+      }, 0)
+      if (numErrors === 0) onSubmit(values)
+      else if (onFailure !== undefined) onFailure(errors)
+      else console.error('formish: failed to submit form', errors)
+    }
+  }, [errors])
 
   return [values, errors, handleChange, handleSubmit]
 }
