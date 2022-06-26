@@ -85,7 +85,7 @@ export const useFormState = <F>(params: {
       else if (onFailure !== undefined) onFailure(errors)
       else console.error('formish: failed to submit form', errors)
     }
-  }, [errors])
+  }, [errors, values])
 
   return [values, errors, handleChange, handleSubmit]
 }
