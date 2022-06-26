@@ -9,6 +9,7 @@ import { useMemo, useState } from 'react'
 import type { ChangeEvent, Dispatch, SetStateAction } from 'react'
 import type {
   FormChangeHandler,
+  FormChangeValidator,
   FormErrors,
   FormSubmitHandler,
   FormValidationSchema,
@@ -42,6 +43,19 @@ const changeEventKeyValue = (event: ChangeEvent<any>): [any, any] => {
   }
 }
 
+const validateChange = (
+  validator: FormChangeValidator<any, any>,
+  value: any
+): [boolean, string?] => {
+  if (Array.isArray(validator)) {
+    for (const validate of validator) {
+      const [isValid, error] = validate(value)
+      if (!isValid) return [isValid, error]
+    }
+    return [true, undefined]
+  } else return validator(value)
+}
+
 /**
  * Formik-esque state management
  */
@@ -63,8 +77,8 @@ export const useFormState = <F>(params: {
       event.preventDefault()
       const [key, value] = changeEventKeyValue(event)
       if (validationSchema && key in validationSchema) {
-        const validate = validationSchema[key as keyof typeof validationSchema]
-        const [isValid, error] = validate(value)
+        const validator = validationSchema[key as keyof typeof validationSchema]
+        const [isValid, error] = validateChange(validator, value)
         setTimeout(() => editError(key, isValid ? undefined : error!), 0)
       }
       editValue(key, value)
